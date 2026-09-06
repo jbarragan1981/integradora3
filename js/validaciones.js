@@ -2,8 +2,7 @@
  * Validaciones del formulario de registro.
  * Se ejecutan antes de enviar los datos al controlador.
  *
- * Estado: esqueleto inicial. Se implementa mas adelante
- *
+ * Estado: esqueleto inicial. Se implementa mas adelante *
  * Reglas previstas:
  *  - Campos vacíos: título, categoría, prioridad, reportante, correo y descripción.
  *  - Longitud: título entre 5 y 120 caracteres, descripción mínimo 15.

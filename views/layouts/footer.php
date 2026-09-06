@@ -1,7 +1,7 @@
 </main>
 
 <footer class="pie">
-    <p>EasyTickets · Actividad integradora 3 - Aplicación web con PHP, MySQL y MVC</p>
+    <p>EasyTickets · Actividad integradora 3 — Aplicación web con PHP, MySQL y MVC</p>
     <p>Universidad ECOTEC · Ingeniería en Sistemas Inteligentes</p>
 </footer>
 

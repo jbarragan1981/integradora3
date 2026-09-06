@@ -52,6 +52,10 @@ switch ($ruta) {
         $controlador->eliminar();
         break;
 
+    case 'diagnostico':      // TODO eliminar antes de la entrega final
+        $controlador->diagnostico();
+        break;
+
     default:
         http_response_code(404);
         $controlador->noEncontrado();

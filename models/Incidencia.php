@@ -46,7 +46,6 @@ class Incidencia
     public function cambiarEstado(int $id, string $estado): bool
     {
         // TODO UPDATE incidencias SET estado = :estado WHERE id = :id.
-        return false;
     }
 
     /** Busca incidencias por título o por persona que reporta (opcional). */

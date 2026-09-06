@@ -27,9 +27,9 @@ $rutaActual = $_GET['ruta'] ?? 'tablero';
 
     <nav class="menu" aria-label="Secciones">
         <a href="<?= URL_BASE ?>/index.php?ruta=tablero"
-           class="menu_item <?= $rutaActual === 'tablero' ? 'menu_item--activo' : '' ?>">Tablero</a>
+           class="menu_item <?= $rutaActual === 'tablero' ? 'menu__item--activo' : '' ?>">Tablero</a>
         <a href="<?= URL_BASE ?>/index.php?ruta=listar"
-           class="menu_item <?= $rutaActual === 'listar' ? 'menu_item--activo' : '' ?>">Registros</a>
+           class="menu_item <?= $rutaActual === 'listar' ? 'menu__item--activo' : '' ?>">Registros</a>
         <a href="<?= URL_BASE ?>/index.php?ruta=crear" class="boton boton--claro">Reportar incidencia</a>
     </nav>
 </header>
