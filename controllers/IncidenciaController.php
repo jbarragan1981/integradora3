@@ -19,23 +19,101 @@ class IncidenciaController
     public function __construct()
     {
         $this->vistas = RUTA_BASE . '/views';
+        require_once RUTA_BASE . '/models/Incidencia.php';
         // TODO instanciar el modelo Incidencia con la conexión PDO.
     }
 
     /** Tablero de incidencias agrupadas por estado. */
     public function tablero(): void
     {
-        // TODO: pedir al modelo las incidencias agrupadas por estado.
+        // TODO: obtener este arreglo desde el modelo, agrupado por estado.
+        $incidenciasPorEstado = [
+            'Nuevo' => [
+                [
+                    'id'         => 1,
+                    'titulo'     => 'La impresora del segundo piso no responde',
+                    'categoria'  => 'Hardware',
+                    'prioridad'  => 'Media',
+                    'reportante' => 'Carlos Mendoza',
+                    'fecha'      => '2026-09-01',
+                ],
+                [
+                    'id'         => 2,
+                    'titulo'     => 'Solicitud de acceso a carpeta compartida de Contabilidad',
+                    'categoria'  => 'Accesos',
+                    'prioridad'  => 'Baja',
+                    'reportante' => 'Estefanía Rojas',
+                    'fecha'      => '2026-09-02',
+                ],
+            ],
+            'En proceso' => [
+                [
+                    'id'         => 3,
+                    'titulo'     => 'Caída intermitente de la red en bodega',
+                    'categoria'  => 'Red',
+                    'prioridad'  => 'Alta',
+                    'reportante' => 'Luis Andrade',
+                    'fecha'      => '2026-08-30',
+                ],
+                [
+                    'id'         => 4,
+                    'titulo'     => 'Error al generar reportes en el sistema de ventas',
+                    'categoria'  => 'Software',
+                    'prioridad'  => 'Crítica',
+                    'reportante' => 'Marcela Vera',
+                    'fecha'      => '2026-08-29',
+                ],
+            ],
+            'Resuelto' => [
+                [
+                    'id'         => 5,
+                    'titulo'     => 'Reinicio del servidor de correo',
+                    'categoria'  => 'Infraestructura',
+                    'prioridad'  => 'Alta',
+                    'reportante' => 'Diego Salas',
+                    'fecha'      => '2026-08-27',
+                ],
+            ],
+            'Cerrado' => [
+                [
+                    'id'         => 6,
+                    'titulo'     => 'Instalación de antivirus en equipos nuevos',
+                    'categoria'  => 'Software',
+                    'prioridad'  => 'Baja',
+                    'reportante' => 'Paola Iturralde',
+                    'fecha'      => '2026-08-20',
+                ],
+                [
+                    'id'         => 7,
+                    'titulo'     => 'Cambio de contraseña del router principal',
+                    'categoria'  => 'Red',
+                    'prioridad'  => 'Media',
+                    'reportante' => 'Jorge Ponce',
+                    'fecha'      => '2026-08-18',
+                ],
+            ],
+        ];
+
         $titulo = 'Tablero de incidencias';
-        $this->render('incidencias/tablero', compact('titulo'));
+        $this->render('incidencias/tablero', compact('titulo', 'incidenciasPorEstado'));
     }
 
     /** Muestra el formulario de registro. */
     public function crear(): void
     {
-        // TODO: enviar a la vista el catálogo de categorías.
+        // TODO: obtener el catálogo de categorías desde el modelo.
+        $categorias = [
+            1 => 'Hardware',
+            2 => 'Software',
+            3 => 'Red',
+            4 => 'Accesos',
+            5 => 'Infraestructura',
+        ];
+
+        $prioridades = ['Baja', 'Media', 'Alta', 'Crítica'];
+
         $titulo = 'Reportar incidencia';
-        $this->render('incidencias/crear', compact('titulo'));
+        $this->render('incidencias/crear', compact('titulo', 'categorias', 'prioridades'));
     }
 
     /** Procesa el POST del formulario e inserta mediante el modelo. */

@@ -3,10 +3,9 @@
  * Conexión a MySQL.
  *
  * Archivo independiente: ningún otro archivo del proyecto define credenciales.
- * Base de datos: integradora - usuario root sin contraseña (entorno local XAMPP).
+ * Base de datos: integradora — usuario root sin contraseña (entorno local XAMPP).
  *
- * Estado: esqueleto inicial
- */
+ * Estado: esqueleto inicial */
 
 declare(strict_types=1);
 
