@@ -11,5 +11,5 @@
 <section class="pendiente">
     <h2>Columnas de la tabla</h2>
     <p>ID · Título · Categoría · Prioridad · Estado · Reporta · Fecha</p>
-    <p class="pendiente__nota">Se implementa en el commit 7.</p>
+    <p class="pendiente_nota">TODO</p>
 </section>

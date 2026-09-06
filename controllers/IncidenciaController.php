@@ -101,9 +101,19 @@ class IncidenciaController
     /** Muestra el formulario de registro. */
     public function crear(): void
     {
-        // TODO: enviar a la vista el catálogo de categorías.
+        // TODO: obtener el catálogo de categorías desde el modelo.
+        $categorias = [
+            1 => 'Hardware',
+            2 => 'Software',
+            3 => 'Red',
+            4 => 'Accesos',
+            5 => 'Infraestructura',
+        ];
+
+        $prioridades = ['Baja', 'Media', 'Alta', 'Crítica'];
+
         $titulo = 'Reportar incidencia';
-        $this->render('incidencias/crear', compact('titulo'));
+        $this->render('incidencias/crear', compact('titulo', 'categorias', 'prioridades'));
     }
 
     /** Procesa el POST del formulario e inserta mediante el modelo. */
