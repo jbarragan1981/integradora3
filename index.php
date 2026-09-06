@@ -9,7 +9,7 @@
  *
  * Flujo:  Navegador -> index.php -> Controlador -> Modelo -> MySQL
  *
- * Autor: Johanna Barragsn - ECOTEC
+ * Autor: Johanna Barragan - ECOTEC
  */
 
 declare(strict_types=1);
