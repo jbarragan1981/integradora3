@@ -1,0 +1,212 @@
+/* ==========================================================================
+   EasyTickets — hoja de estilos
+   tokens de color, tipografía, barra superior y contenedor general.
+   Los estilos del tablero, formulario y tabla se agregan en commits siguientes.
+   ========================================================================== */
+
+:root {
+    /* Paleta */
+    --tinta:        #14274E;  /* azul profundo, texto y barra */
+    --tinta-suave:  #3C5480;
+    --turquesa:     #2C8C8C;  /* acción principal */
+    --menta:        #5FC2A4;  /* estado resuelto */
+    --ambar:        #F2B035;  /* estado en proceso */
+    --coral:        #EC7A69;  /* prioridad alta */
+    --lienzo:       #EEF2F6;  /* fondo de página */
+    --papel:        #FFFFFF;
+    --linea:        #D8E1EC;
+
+    /* Tipografía */
+    --fuente: 'Archivo', 'Segoe UI', system-ui, sans-serif;
+
+    /* Forma */
+    --radio: 12px;
+    --radio-chico: 8px;
+    --sombra: 0 10px 24px rgba(20, 39, 78, 0.08);
+    --ancho: 1120px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    background: var(--lienzo);
+    color: var(--tinta);
+    font-family: var(--fuente);
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+h1, h2, h3 {
+    margin: 0 0 0.4em;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+h1 { font-size: 1.9rem; font-weight: 700; }
+h2 { font-size: 1.25rem; font-weight: 600; }
+
+p { margin: 0 0 0.8em; }
+
+a {
+    color: var(--turquesa);
+    text-decoration: none;
+}
+
+a:hover { text-decoration: underline; }
+
+:focus-visible {
+    outline: 3px solid var(--ambar);
+    outline-offset: 2px;
+}
+
+/* --------------------------------------------------------- Barra superior */
+
+.barra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 24px;
+    background: var(--tinta);
+    color: var(--papel);
+}
+
+.marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--papel);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.marca:hover { text-decoration: none; }
+
+.marca_pulso {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--menta);
+    box-shadow: 0 0 0 4px rgba(95, 194, 164, 0.25);
+}
+
+.marca_nota {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #9DB2D2;
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.menu_item {
+    padding: 8px 14px;
+    border-radius: var(--radio-chico);
+    color: #C8D6EC;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.menu_item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--papel);
+    text-decoration: none;
+}
+
+.menu_item--activo {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--papel);
+}
+
+/* --------------------------------------------------------------- Botones */
+
+.boton {
+    display: inline-block;
+    padding: 10px 18px;
+    border: none;
+    border-radius: var(--radio-chico);
+    background: var(--turquesa);
+    color: var(--papel);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton:hover {
+    background: #24777A;
+    text-decoration: none;
+}
+
+.boton--claro {
+    background: var(--papel);
+    color: var(--tinta);
+}
+
+.boton--claro:hover { background: #E4ECF7; }
+
+/* -------------------------------------------------------------- Contenido */
+
+.contenido {
+    max-width: var(--ancho);
+    margin: 0 auto;
+    padding: 32px 24px 56px;
+}
+
+.encabezado-seccion {
+    margin-bottom: 24px;
+}
+
+.encabezado-seccion p {
+    max-width: 62ch;
+    color: var(--tinta-suave);
+}
+
+.pendiente {
+    padding: 24px;
+    border: 1px dashed var(--linea);
+    border-radius: var(--radio);
+    background: var(--papel);
+}
+
+.pendiente_nota {
+    margin: 0;
+    color: var(--tinta-suave);
+    font-size: 0.9rem;
+}
+
+/* --------------------------------------------------------------- Pie */
+
+.pie {
+    padding: 24px;
+    border-top: 1px solid var(--linea);
+    color: var(--tinta-suave);
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.pie p { margin: 2px 0; }
+
+/* --------------------------------------------------------------- Móvil */
+
+@media (max-width: 640px) {
+    .barra { flex-direction: column; align-items: flex-start; }
+    .contenido { padding: 24px 16px 40px; }
+    h1 { font-size: 1.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+}
