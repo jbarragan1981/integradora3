@@ -17,13 +17,28 @@ $clasesPrioridad = [
     'Alta'    => 'alta',
     'Crítica' => 'critica',
 ];
+
+$totalIncidencias = array_sum(array_map('count', $incidenciasPorEstado));
 ?>
 <section class="encabezado-seccion">
     <h1>Tablero de incidencias</h1>
     <p>Arrastra una tarjeta hacia otra columna para actualizar su estado.</p>
 </section>
 
-<div class="tablero">
+<?php if (!empty($aviso)): ?>
+    <div class="aviso" role="status"><?= htmlspecialchars($aviso) ?></div>
+<?php endif; ?>
+
+<p class="aviso-tablero" id="aviso-tablero" role="status" aria-live="polite"></p>
+
+<?php if ($totalIncidencias === 0): ?>
+    <div class="aviso aviso--neutro">
+        Todavía no hay incidencias registradas.
+        <a href="<?= URL_BASE ?>/index.php?ruta=crear">Reporta la primera</a>.
+    </div>
+<?php endif; ?>
+
+<div class="tablero" id="tablero">
     <?php foreach (Incidencia::ESTADOS as $estado): ?>
         <?php $tarjetas = $incidenciasPorEstado[$estado] ?? []; ?>
         <section class="columna columna--<?= $clasesEstado[$estado] ?>">
@@ -33,9 +48,7 @@ $clasesPrioridad = [
             </header>
 
             <div class="columna_lista" data-estado="<?= htmlspecialchars($estado) ?>">
-                <?php if (empty($tarjetas)): ?>
-                    <p class="columna_vacio">Sin incidencias</p>
-                <?php endif; ?>
+                <p class="columna_vacio"<?= empty($tarjetas) ? '' : ' hidden' ?>>Sin incidencias</p>
 
                 <?php foreach ($tarjetas as $tarjeta): ?>
                     <article class="tarjeta"
