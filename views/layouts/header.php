@@ -16,7 +16,7 @@ $rutaActual = $_GET['ruta'] ?? 'tablero';
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= URL_BASE ?>/css/estilos.css">
 </head>
-<body>
+<body data-url-base="<?= URL_BASE ?>">
 
 <header class="barra">
     <a class="marca" href="<?= URL_BASE ?>/index.php?ruta=tablero">

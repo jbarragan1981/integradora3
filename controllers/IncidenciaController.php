@@ -5,146 +5,148 @@
  * Responsabilidad: recibir las acciones del usuario, validar en servidor,
  * pedir los datos al Modelo y decidir qué Vista se muestra.
  * No escribe HTML ni consultas SQL.
- *
- * Estado: esqueleto inicial. La lógica se implementa más adelante.
  */
 
 declare(strict_types=1);
 
 class IncidenciaController
 {
+    /** Mensajes de confirmación que llegan por la URL después de un redirect. */
+    private const AVISOS = [
+        'creada'     => 'La incidencia se registró correctamente.',
+        'eliminada'  => 'La incidencia fue eliminada.',
+        'noEliminada' => 'No se encontró la incidencia que intentabas eliminar.',
+    ];
+
     /** Ruta absoluta de la carpeta de vistas. */
     private string $vistas;
+
+    private Incidencia $modelo;
 
     public function __construct()
     {
         $this->vistas = RUTA_BASE . '/views';
+
+        require_once RUTA_BASE . '/config/conexion.php';
         require_once RUTA_BASE . '/models/Incidencia.php';
-        // TODO instanciar el modelo Incidencia con la conexión PDO.
+
+        $this->modelo = new Incidencia(conexion());
     }
 
     /** Tablero de incidencias agrupadas por estado. */
     public function tablero(): void
     {
-        // TODO: obtener este arreglo desde el modelo, agrupado por estado.
-        $incidenciasPorEstado = [
-            'Nuevo' => [
-                [
-                    'id'         => 1,
-                    'titulo'     => 'La impresora del segundo piso no responde',
-                    'categoria'  => 'Hardware',
-                    'prioridad'  => 'Media',
-                    'reportante' => 'Carlos Mendoza',
-                    'fecha'      => '2026-09-01',
-                ],
-                [
-                    'id'         => 2,
-                    'titulo'     => 'Solicitud de acceso a carpeta compartida de Contabilidad',
-                    'categoria'  => 'Accesos',
-                    'prioridad'  => 'Baja',
-                    'reportante' => 'Estefanía Rojas',
-                    'fecha'      => '2026-09-02',
-                ],
-            ],
-            'En proceso' => [
-                [
-                    'id'         => 3,
-                    'titulo'     => 'Caída intermitente de la red en bodega',
-                    'categoria'  => 'Red',
-                    'prioridad'  => 'Alta',
-                    'reportante' => 'Luis Andrade',
-                    'fecha'      => '2026-08-30',
-                ],
-                [
-                    'id'         => 4,
-                    'titulo'     => 'Error al generar reportes en el sistema de ventas',
-                    'categoria'  => 'Software',
-                    'prioridad'  => 'Crítica',
-                    'reportante' => 'Marcela Vera',
-                    'fecha'      => '2026-08-29',
-                ],
-            ],
-            'Resuelto' => [
-                [
-                    'id'         => 5,
-                    'titulo'     => 'Reinicio del servidor de correo',
-                    'categoria'  => 'Infraestructura',
-                    'prioridad'  => 'Alta',
-                    'reportante' => 'Diego Salas',
-                    'fecha'      => '2026-08-27',
-                ],
-            ],
-            'Cerrado' => [
-                [
-                    'id'         => 6,
-                    'titulo'     => 'Instalación de antivirus en equipos nuevos',
-                    'categoria'  => 'Software',
-                    'prioridad'  => 'Baja',
-                    'reportante' => 'Paola Iturralde',
-                    'fecha'      => '2026-08-20',
-                ],
-                [
-                    'id'         => 7,
-                    'titulo'     => 'Cambio de contraseña del router principal',
-                    'categoria'  => 'Red',
-                    'prioridad'  => 'Media',
-                    'reportante' => 'Jorge Ponce',
-                    'fecha'      => '2026-08-18',
-                ],
-            ],
-        ];
+        $incidenciasPorEstado = $this->modelo->obtenerPorEstado();
 
         $titulo = 'Tablero de incidencias';
-        $this->render('incidencias/tablero', compact('titulo', 'incidenciasPorEstado'));
+        $aviso  = $this->aviso();
+        $this->render('incidencias/tablero', compact('titulo', 'incidenciasPorEstado', 'aviso'));
     }
 
-    /** Muestra el formulario de registro. */
-    public function crear(): void
+    /**
+     * Muestra el formulario de registro.
+     *
+     * @param array<string, string> $errores      Mensajes por campo tras un intento fallido
+     * @param array<string, mixed>  $datosPrevios Valores escritos por el usuario
+     */
+    public function crear(array $errores = [], array $datosPrevios = []): void
     {
-        // TODO: obtener el catálogo de categorías desde el modelo.
-        $categorias = [
-            1 => 'Hardware',
-            2 => 'Software',
-            3 => 'Red',
-            4 => 'Accesos',
-            5 => 'Infraestructura',
-        ];
-
-        $prioridades = ['Baja', 'Media', 'Alta', 'Crítica'];
+        $categorias  = $this->modelo->categorias();
+        $prioridades = Incidencia::PRIORIDADES;
 
         $titulo = 'Reportar incidencia';
-        $this->render('incidencias/crear', compact('titulo', 'categorias', 'prioridades'));
+        $this->render(
+            'incidencias/crear',
+            compact('titulo', 'categorias', 'prioridades', 'errores', 'datosPrevios')
+        );
     }
 
     /** Procesa el POST del formulario e inserta mediante el modelo. */
     public function guardar(): void
     {
-        // TODO: validar en servidor y llamar a Incidencia::crear().
-        $this->redirigir('tablero');
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirigir('crear');
+        }
+
+        $datos = [
+            'titulo'       => trim((string) ($_POST['titulo'] ?? '')),
+            'categoria_id' => trim((string) ($_POST['categoria_id'] ?? '')),
+            'prioridad'    => trim((string) ($_POST['prioridad'] ?? '')),
+            'reportante'   => trim((string) ($_POST['reportante'] ?? '')),
+            'correo'       => trim((string) ($_POST['correo'] ?? '')),
+            'area_codigo'  => trim((string) ($_POST['area_codigo'] ?? '')),
+            'descripcion'  => trim((string) ($_POST['descripcion'] ?? '')),
+        ];
+
+        $errores = $this->validar($datos);
+
+        // Con errores se vuelve a mostrar el formulario conservando lo escrito.
+        if ($errores !== []) {
+            $this->crear($errores, $datos);
+            return;
+        }
+
+        $datos['estado'] = Incidencia::ESTADOS[0];
+        $this->modelo->crear($datos);
+
+        $this->redirigir('tablero', ['mensaje' => 'creada']);
     }
 
-    /** Consulta de registros en tabla HTML. */
+    /** Consulta de registros en tabla HTML, con búsqueda opcional. */
     public function listar(): void
     {
-        // TODO: $incidencias = $this->modelo->obtenerTodas();
+        $termino = trim((string) ($_GET['q'] ?? ''));
+
+        $incidencias = $termino === ''
+            ? $this->modelo->obtenerTodas()
+            : $this->modelo->buscar($termino);
+
         $titulo = 'Incidencias registradas';
-        $this->render('incidencias/listar', compact('titulo'));
+        $aviso  = $this->aviso();
+        $this->render('incidencias/listar', compact('titulo', 'incidencias', 'termino', 'aviso'));
     }
 
     /** Actualiza el estado de una incidencia al arrastrarla en el tablero. */
     public function mover(): void
     {
-        // TODO: leer id y estado, llamar a Incidencia::cambiarEstado()
-        // y responder en JSON para el fetch del tablero.
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(['ok' => false, 'mensaje' => 'Función pendiente']);
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['ok' => false, 'mensaje' => 'Método no permitido']);
+            return;
+        }
+
+        $id     = (int) ($_POST['id'] ?? 0);
+        $estado = trim((string) ($_POST['estado'] ?? ''));
+
+        if ($id <= 0 || !in_array($estado, Incidencia::ESTADOS, true)) {
+            http_response_code(422);
+            echo json_encode(['ok' => false, 'mensaje' => 'Datos incompletos o estado no válido']);
+            return;
+        }
+
+        $actualizada = $this->modelo->cambiarEstado($id, $estado);
+
+        echo json_encode([
+            'ok'      => $actualizada,
+            'mensaje' => $actualizada
+                ? 'Estado actualizado'
+                : 'La incidencia ya estaba en esa columna o no existe',
+        ]);
     }
 
     /** Elimina una incidencia. */
     public function eliminar(): void
-    {        
-        //TODO
-        $this->redirigir('listar');
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirigir('listar');
+        }
+
+        $id = (int) ($_POST['id'] ?? 0);
+        $eliminada = $id > 0 && $this->modelo->eliminar($id);
+
+        $this->redirigir('listar', ['mensaje' => $eliminada ? 'eliminada' : 'noEliminada']);
     }
 
     /** Ruta inexistente. */
@@ -152,6 +154,80 @@ class IncidenciaController
     {
         $titulo = 'Página no encontrada';
         $this->render('404', compact('titulo'));
+    }
+
+    /**
+     * Reglas de validación del formulario de registro.
+     * Refleja las mismas reglas de js/validaciones.js, porque el navegador
+     * puede saltarse la validación del cliente.
+     *
+     * @param  array<string, string> $datos
+     * @return array<string, string> Mensajes indexados por campo
+     */
+    private function validar(array $datos): array
+    {
+        $errores = [];
+
+        $longitudTitulo = mb_strlen($datos['titulo']);
+        if ($datos['titulo'] === '') {
+            $errores['titulo'] = 'Ingresa el título de la incidencia.';
+        } elseif ($longitudTitulo < 5) {
+            $errores['titulo'] = 'El título debe tener al menos 5 caracteres.';
+        } elseif ($longitudTitulo > 120) {
+            $errores['titulo'] = 'El título no puede superar los 120 caracteres.';
+        }
+
+        $categorias = $this->modelo->categorias();
+        if ($datos['categoria_id'] === '') {
+            $errores['categoria_id'] = 'Selecciona una categoría.';
+        } elseif (!isset($categorias[(int) $datos['categoria_id']])) {
+            $errores['categoria_id'] = 'La categoría seleccionada no existe.';
+        }
+
+        if (!in_array($datos['prioridad'], Incidencia::PRIORIDADES, true)) {
+            $errores['prioridad'] = 'La prioridad seleccionada no es válida.';
+        }
+
+        $longitudReportante = mb_strlen($datos['reportante']);
+        if ($datos['reportante'] === '') {
+            $errores['reportante'] = 'Indica quién reporta la incidencia.';
+        } elseif ($longitudReportante < 3) {
+            $errores['reportante'] = 'El nombre debe tener al menos 3 caracteres.';
+        } elseif ($longitudReportante > 100) {
+            $errores['reportante'] = 'El nombre no puede superar los 100 caracteres.';
+        }
+
+        if ($datos['correo'] === '') {
+            $errores['correo'] = 'Ingresa un correo electrónico.';
+        } elseif (mb_strlen($datos['correo']) > 150) {
+            $errores['correo'] = 'El correo no puede superar los 150 caracteres.';
+        } elseif (!filter_var($datos['correo'], FILTER_VALIDATE_EMAIL)) {
+            $errores['correo'] = 'El formato del correo electrónico no es válido.';
+        }
+
+        if ($datos['area_codigo'] === '') {
+            $errores['area_codigo'] = 'Ingresa el código de área.';
+        } elseif (!ctype_digit($datos['area_codigo'])) {
+            $errores['area_codigo'] = 'El código de área debe ser un número entero.';
+        } elseif ((int) $datos['area_codigo'] < 1 || (int) $datos['area_codigo'] > 999) {
+            $errores['area_codigo'] = 'El código de área debe estar entre 1 y 999.';
+        }
+
+        if ($datos['descripcion'] === '') {
+            $errores['descripcion'] = 'Describe la incidencia.';
+        } elseif (mb_strlen($datos['descripcion']) < 15) {
+            $errores['descripcion'] = 'La descripción debe tener al menos 15 caracteres.';
+        }
+
+        return $errores;
+    }
+
+    /** Traduce el parámetro ?mensaje= de la URL a un texto para la vista. */
+    private function aviso(): ?string
+    {
+        $clave = (string) ($_GET['mensaje'] ?? '');
+
+        return self::AVISOS[$clave] ?? null;
     }
 
     /**
@@ -168,10 +244,15 @@ class IncidenciaController
         require $this->vistas . '/layouts/footer.php';
     }
 
-    /** Redirección interna a otra ruta de la aplicación. */
-    private function redirigir(string $ruta): void
+    /**
+     * Redirección interna a otra ruta de la aplicación.
+     *
+     * @param array<string, string> $parametros Pares adicionales para la URL
+     */
+    private function redirigir(string $ruta, array $parametros = []): void
     {
-        header('Location: ' . URL_BASE . '/index.php?ruta=' . $ruta);
+        $consulta = http_build_query(array_merge(['ruta' => $ruta], $parametros));
+        header('Location: ' . URL_BASE . '/index.php?' . $consulta);
         exit;
     }
 }

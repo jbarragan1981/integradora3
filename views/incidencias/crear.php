@@ -1,13 +1,21 @@
 <?php
 /**
  * Vista: formulario de registro de incidencias.
+ * Los mensajes de $errores llegan cuando la validación de servidor falla.
  */
 $datosPrevios = $datosPrevios ?? [];
+$errores      = $errores ?? [];
 ?>
 <section class="encabezado-seccion">
     <h1>Reportar incidencia</h1>
     <p>Toda incidencia nueva ingresa al tablero en el estado <strong>Nuevo</strong>.</p>
 </section>
+
+<?php if ($errores !== []): ?>
+    <div class="aviso aviso--error" role="alert">
+        Revisa los campos marcados: hay <?= count($errores) ?> dato(s) por corregir.
+    </div>
+<?php endif; ?>
 
 <form class="formulario" id="form-incidencia" action="<?= URL_BASE ?>/index.php?ruta=guardar" method="post" novalidate>
 
@@ -17,7 +25,7 @@ $datosPrevios = $datosPrevios ?? [];
         </label>
         <input class="campo_control" type="text" id="titulo" name="titulo" maxlength="120"
                value="<?= htmlspecialchars($datosPrevios['titulo'] ?? '') ?>" required>
-        <span class="campo_error" id="error-titulo"></span>
+        <span class="campo_error" id="error-titulo"><?= htmlspecialchars($errores['titulo'] ?? '') ?></span>
     </div>
 
     <div class="campo">
@@ -33,7 +41,7 @@ $datosPrevios = $datosPrevios ?? [];
                 </option>
             <?php endforeach; ?>
         </select>
-        <span class="campo_error" id="error-categoria_id"></span>
+        <span class="campo_error" id="error-categoria_id"><?= htmlspecialchars($errores['categoria_id'] ?? '') ?></span>
     </div>
 
     <div class="campo campo--corto">
@@ -48,7 +56,7 @@ $datosPrevios = $datosPrevios ?? [];
                 </option>
             <?php endforeach; ?>
         </select>
-        <span class="campo_error" id="error-prioridad"></span>
+        <span class="campo_error" id="error-prioridad"><?= htmlspecialchars($errores['prioridad'] ?? '') ?></span>
     </div>
 
     <div class="campo">
@@ -57,7 +65,7 @@ $datosPrevios = $datosPrevios ?? [];
         </label>
         <input class="campo_control" type="text" id="reportante" name="reportante" maxlength="100"
                value="<?= htmlspecialchars($datosPrevios['reportante'] ?? '') ?>" required>
-        <span class="campo_error" id="error-reportante"></span>
+        <span class="campo_error" id="error-reportante"><?= htmlspecialchars($errores['reportante'] ?? '') ?></span>
     </div>
 
     <div class="campo">
@@ -66,7 +74,7 @@ $datosPrevios = $datosPrevios ?? [];
         </label>
         <input class="campo_control" type="email" id="correo" name="correo" maxlength="150"
                value="<?= htmlspecialchars($datosPrevios['correo'] ?? '') ?>" required>
-        <span class="campo_error" id="error-correo"></span>
+        <span class="campo_error" id="error-correo"><?= htmlspecialchars($errores['correo'] ?? '') ?></span>
     </div>
 
     <div class="campo campo--corto">
@@ -75,7 +83,7 @@ $datosPrevios = $datosPrevios ?? [];
         </label>
         <input class="campo_control" type="number" id="area_codigo" name="area_codigo" min="1" max="999"
                value="<?= htmlspecialchars((string) ($datosPrevios['area_codigo'] ?? '')) ?>" required>
-        <span class="campo_error" id="error-area_codigo"></span>
+        <span class="campo_error" id="error-area_codigo"><?= htmlspecialchars($errores['area_codigo'] ?? '') ?></span>
     </div>
 
     <div class="campo">
@@ -84,7 +92,7 @@ $datosPrevios = $datosPrevios ?? [];
         </label>
         <textarea class="campo_control" id="descripcion" name="descripcion" rows="5"
                   required><?= htmlspecialchars($datosPrevios['descripcion'] ?? '') ?></textarea>
-        <span class="campo_error" id="error-descripcion"></span>
+        <span class="campo_error" id="error-descripcion"><?= htmlspecialchars($errores['descripcion'] ?? '') ?></span>
     </div>
 
     <div class="formulario_acciones">
